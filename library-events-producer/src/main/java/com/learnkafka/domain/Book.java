@@ -22,4 +22,6 @@ public class Book {
 
     @NotBlank
     private String bookAuthor;
+
+    private Boolean available;
 }

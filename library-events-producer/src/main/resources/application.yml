@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: nonprod
+    active: local
 ---
 spring:
   config:
@@ -8,9 +8,9 @@ spring:
       on-profile: local
   kafka:
     template:
-      default-topic: library-events
+      default-topic: book-events
     producer:
-      bootstrap-servers: localhost:9092,localhost:9093,localhost:9094
+      bootstrap-servers: localhost:9092
       key-serializer: org.apache.kafka.common.serialization.IntegerSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
       properties:
@@ -19,7 +19,8 @@ spring:
         retry.backoff.ms: 1000
     admin:
       properties:
-        bootstrap.servers: localhost:9092,localhost:9093,localhost:9094
+        bootstrap.servers: localhost:9092
+
 ---
 spring:
   config:
@@ -27,9 +28,9 @@ spring:
       on-profile: nonprod
   kafka:
     template:
-      default-topic: library-events
+      default-topic: book-events
     producer:
-      bootstrap-servers: localhost:9095,localhost:9096,localhost:9097
+      bootstrap-servers: localhost:9095
       key-serializer: org.apache.kafka.common.serialization.IntegerSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
       ssl:

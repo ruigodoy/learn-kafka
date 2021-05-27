@@ -53,7 +53,7 @@ public class LibraryEventProducerUnitTest {
         future.setException(new RuntimeException("Excpetion Calling kafka"));
         when(kafkaTemplate.send(isA(ProducerRecord.class))).thenReturn(future);
 
-        assertThrows(Exception.class, () -> eventProducer.sendLibraryEventApproach2(libraryEvent).get());
+        assertThrows(Exception.class, () -> eventProducer.sendLibraryEventApproach(libraryEvent).get());
     }
 
     @Test
@@ -82,7 +82,7 @@ public class LibraryEventProducerUnitTest {
         future.set(sendResult);
         when(kafkaTemplate.send(isA(ProducerRecord.class))).thenReturn(future);
 
-        ListenableFuture<SendResult<Integer, String>>  listenableFuture = eventProducer.sendLibraryEventApproach2(libraryEvent);
+        ListenableFuture<SendResult<Integer, String>>  listenableFuture = eventProducer.sendLibraryEventApproach(libraryEvent);
 
         SendResult<Integer, String> sendResult1 = listenableFuture.get();
 

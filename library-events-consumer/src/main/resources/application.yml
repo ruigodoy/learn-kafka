@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: nonprod
+    active: local
 server:
   port: 8081
 
@@ -11,27 +11,24 @@ spring:
       on-profile: local
   kafka:
     template:
-      default-topic: library-events
+      default-topic: book-events
     consumer:
-      bootstrap-servers: localhost:9092,localhost:9093,localhost:9094
+      bootstrap-servers: localhost:9092
       key-deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      group-id: library-events-listener-group
+      group-id: book-events-listener-group
     producer:
       bootstrap-servers:
-        -   localhost:9092,localhost:9093,localhost:9094
+        -   localhost:9092
       key-serializer: org.apache.kafka.common.serialization.IntegerSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
-  datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-  jpa:
-    database: h2
-    database-platform: org.hibernate.dialect.H2Dialect
-    generate-ddl: true
-  h2:
-    console:
-      enabled: true
+amazon:
+  access:
+    key: teste123
+    secret-key: teste123
+  region: eu-west-1
+  end-point:
+    url: http://localhost:8000
 
 
 ---
@@ -42,12 +39,12 @@ spring:
       on-profile: nonprod
   kafka:
     template:
-      default-topic: library-events
+      default-topic: book-events
     consumer:
-      bootstrap-servers: localhost:9095,localhost:9096,localhost:9097
+      bootstrap-servers: localhost:9095
       key-deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      group-id: library-events-listener-group
+      group-id: book-events-listener-group
       ssl:
         trust-store-location: file:/home/idd_rsouza/Documentos/JavaTrainee/POCv1/learn-kafka/ssl/client.truststore.jks
         trust-store-password: password
@@ -55,7 +52,7 @@ spring:
         key-store-password: password
     producer:
       bootstrap-servers:
-        -   localhost:9095,localhost:9096,localhost:9097
+        -   localhost:9095
       key-serializer: org.apache.kafka.common.serialization.IntegerSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
     properties:
@@ -81,7 +78,7 @@ spring:
       on-profile: prod
   kafka:
     consumer:
-      bootstrap-servers: localhost:9092,localhost:9093,localhost:9094
+      bootstrap-servers: localhost:9092
       key-deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       group-id: library-events-listener-group

@@ -1,26 +1,29 @@
 package com.learnkafka.entity;
 
 
+import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import lombok.*;
 
-import javax.persistence.*;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
-@Entity
+@ToString
+@EqualsAndHashCode
+@DynamoDBTable(tableName = "library_event")
 public class LibraryEvent {
 
-    @Id
-    @GeneratedValue
+    @DynamoDBHashKey
     private Integer libraryEventId;
-    @Enumerated(EnumType.STRING)
+
+    @DynamoDBAttribute
+    @DynamoDBTypeConvertedEnum
     private LibraryEventType libraryEventType;
-    @OneToOne(mappedBy = "libraryEvent", cascade = {CascadeType.ALL})
-    @ToString.Exclude
+
+    @DynamoDBAttribute
     private Book book;
 
 }

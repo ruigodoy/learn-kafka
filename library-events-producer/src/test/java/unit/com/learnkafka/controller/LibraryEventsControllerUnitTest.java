@@ -46,7 +46,7 @@ public class LibraryEventsControllerUnitTest {
                 .build();
 
         String json = objectMapper.writeValueAsString(libraryEvent);
-        when(libraryEventProducer.sendLibraryEventApproach2(isA(LibraryEvent.class))).thenReturn(null);
+        when(libraryEventProducer.sendLibraryEventApproach(isA(LibraryEvent.class))).thenReturn(null);
 
         mockMvc.perform(post("/v1/libraryevent")
                 .content(json)
@@ -69,7 +69,7 @@ public class LibraryEventsControllerUnitTest {
                 .build();
 
         String json = objectMapper.writeValueAsString(libraryEvent);
-        when(libraryEventProducer.sendLibraryEventApproach2(isA(LibraryEvent.class))).thenReturn(null);
+        when(libraryEventProducer.sendLibraryEventApproach(isA(LibraryEvent.class))).thenReturn(null);
 
         String expectedErrorMessage = "book - must not be null";
         mockMvc.perform(post("/v1/libraryevent")
@@ -95,7 +95,7 @@ public class LibraryEventsControllerUnitTest {
                 .book(book)
                 .build();
         String json = objectMapper.writeValueAsString(libraryEvent);
-        when(libraryEventProducer.sendLibraryEventApproach2(isA(LibraryEvent.class))).thenReturn(null);
+        when(libraryEventProducer.sendLibraryEventApproach(isA(LibraryEvent.class))).thenReturn(null);
 
         //expect
         mockMvc.perform(
@@ -121,7 +121,7 @@ public class LibraryEventsControllerUnitTest {
                 .book(book)
                 .build();
         String json = objectMapper.writeValueAsString(libraryEvent);
-        when(libraryEventProducer.sendLibraryEventApproach2(isA(LibraryEvent.class))).thenReturn(null);
+        when(libraryEventProducer.sendLibraryEventApproach(isA(LibraryEvent.class))).thenReturn(null);
 
         //expect
         mockMvc.perform(
