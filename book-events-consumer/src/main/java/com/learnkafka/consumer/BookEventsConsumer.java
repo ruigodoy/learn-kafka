@@ -1,7 +1,7 @@
 package com.learnkafka.consumer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.learnkafka.service.LibraryEventsService;
+import com.learnkafka.service.BookEventsService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,16 +10,16 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class LibraryEventsConsumer {
+public class BookEventsConsumer {
 
     @Autowired
-    private LibraryEventsService libraryEventsService;
+    private BookEventsService bookEventsService;
 
-    @KafkaListener(topics = {"library-events"})
+    @KafkaListener(topics = {"book-events"})
     public void onMessage(ConsumerRecord<Integer,String> consumerRecord) throws JsonProcessingException {
 
         log.info("ConsumerRecord : {} ", consumerRecord );
-        libraryEventsService.processLibraryEvent(consumerRecord);
+        bookEventsService.processLibraryEvent(consumerRecord);
 
     }
 }

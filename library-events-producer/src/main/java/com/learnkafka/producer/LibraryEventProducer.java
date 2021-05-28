@@ -2,6 +2,7 @@ package com.learnkafka.producer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.learnkafka.domain.BookEvent;
 import com.learnkafka.domain.LibraryEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -26,14 +27,40 @@ public class LibraryEventProducer {
     @Autowired
     KafkaTemplate<Integer, String> kafkaTemplate;
 
-    String topic = "book-events";
+
     @Autowired
     ObjectMapper objectMapper;
 
     public ListenableFuture<SendResult<Integer, String>> sendLibraryEventApproach(LibraryEvent libraryEvent) throws JsonProcessingException {
+        String topic = "library-events";
 
         Integer key = libraryEvent.getLibraryEventId();
         String value = objectMapper.writeValueAsString(libraryEvent);
+
+        ProducerRecord<Integer, String> producerRecord = buildProducerRecord(key, value, topic);
+
+        ListenableFuture<SendResult<Integer, String>> listenableFuture = kafkaTemplate.send(producerRecord);
+
+        listenableFuture.addCallback(new ListenableFutureCallback<SendResult<Integer, String>>() {
+            @Override
+            public void onFailure(Throwable ex) {
+                handleFailure(key, value, ex);
+            }
+
+            @Override
+            public void onSuccess(SendResult<Integer, String> result) {
+                handleSuccess(key, value, result);
+            }
+        });
+
+        return listenableFuture;
+    }
+
+    public ListenableFuture<SendResult<Integer, String>> sendBookEventApproach(BookEvent bookEvent) throws JsonProcessingException {
+        String topic = "book-events";
+
+        Integer key = bookEvent.getBookEventId();
+        String value = objectMapper.writeValueAsString(bookEvent);
 
         ProducerRecord<Integer, String> producerRecord = buildProducerRecord(key, value, topic);
 

@@ -27,10 +27,9 @@ public class LibraryEventsController {
     @Autowired
     LibraryEventProducer libraryEventProducer;
 
-    private final CloseableHttpClient httpClient = HttpClients.createDefault();
-
     @GetMapping("/v1/libraryevent")
     public ResponseEntity<?> getLibraryEvent() throws IOException {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpGet request = new HttpGet("http://localhost:8081/v1/libraryevent");
         CloseableHttpResponse response = httpClient.execute(request);
         HttpEntity entity = response.getEntity();
@@ -41,7 +40,6 @@ public class LibraryEventsController {
     @PostMapping("/v1/libraryevent")
     public ResponseEntity<LibraryEvent> postLibraryEvent(@RequestBody @Valid LibraryEvent libraryEvent) throws JsonProcessingException, ExecutionException, InterruptedException {
 
-        //invoke kafka producer
         libraryEvent.setLibraryEventType(LibraryEventType.NEW);
         libraryEvent.getBook().setAvailable(Boolean.TRUE);
         libraryEventProducer.sendLibraryEventApproach(libraryEvent);

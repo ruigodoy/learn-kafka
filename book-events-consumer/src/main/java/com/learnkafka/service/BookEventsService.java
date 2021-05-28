@@ -3,35 +3,27 @@ package com.learnkafka.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.learnkafka.entity.LibraryEvent;
-import com.learnkafka.repository.LibraryEventsRepository;
+import com.learnkafka.entity.BookEvent;
+import com.learnkafka.repository.BookEventsRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.RecoverableDataAccessException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
-import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
-public class LibraryEventsService {
+public class BookEventsService {
 
     @Autowired
-    private LibraryEventsRepository libraryEventsRepository;
+    private BookEventsRepository bookEventsRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -41,19 +33,43 @@ public class LibraryEventsService {
 
 
     public void processLibraryEvent(ConsumerRecord<Integer, String> consumerRecord) throws JsonProcessingException {
-        LibraryEvent libraryEvent = objectMapper.readValue(consumerRecord.value(), LibraryEvent.class);
-        log.info("libraryEvent : {} ", libraryEvent);
+        BookEvent bookEvent = objectMapper.readValue(consumerRecord.value(), BookEvent.class);
+        log.info("libraryEvent TESTETESTE: {} ", bookEvent);
 
-        if (libraryEvent.getLibraryEventId() != null && libraryEvent.getLibraryEventId() == 0) {
+        if (bookEvent.getBookEventId() != null && bookEvent.getBookEventId() == 0) {
             throw new RecoverableDataAccessException("Temporary Network Issue");
         }
 
-        save(libraryEvent);
+        switch (bookEvent.getBookEventType()) {
+            case NEW:
+                log.info("libraryEvent TESTE: {} ", bookEvent);
+                save(bookEvent);
+                break;
+            case UPDATE:
+                validate(bookEvent);
+                save(bookEvent);
+                break;
+            default:
+                log.info("Invalid Library Event Type");
+        }
     }
 
-    public void save(LibraryEvent libraryEvent) {
-        libraryEventsRepository.save(libraryEvent);
-        log.info("Successfully Persisted the libary Event {} ", libraryEvent);
+    private void validate(BookEvent bookEvent) {
+        if (bookEvent.getBookEventId() == null) {
+            throw new IllegalArgumentException("Library Event Id is missing");
+        }
+
+        Optional<BookEvent> libraryEventOptional = bookEventsRepository.findById(bookEvent.getBookEventId());
+        if (!libraryEventOptional.isPresent()) {
+            throw new IllegalArgumentException("Not a valid library Event");
+        }
+        log.info("Validation is successful for the library Event : {} ", libraryEventOptional.get());
+    }
+
+    private void save(BookEvent bookEvent) {
+        log.info("entrou save()");
+        bookEventsRepository.save(bookEvent);
+        log.info("Successfully Persisted the libary Event {} ", bookEvent);
     }
 
     public void handleRecovery(ConsumerRecord<Integer, String> record) {
@@ -89,23 +105,17 @@ public class LibraryEventsService {
         log.info("Message Sent SuccessFully for the key : {} and the value is {} , partition is {}", key, value, result.getRecordMetadata().partition());
     }
 
-    public List<LibraryEvent> getLibrary(){
-        return (List<LibraryEvent>) libraryEventsRepository.findAll();
+    public List<BookEvent> getLibrary(){
+        return (List<BookEvent>) bookEventsRepository.findAll();
     }
 
-    public ResponseEntity<?> hasBook(Integer id) throws IOException {
-
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpGet request = new HttpGet("http://localhost:8082/v1/bookevent/" + id);
-        CloseableHttpResponse response = httpClient.execute(request);
-        HttpEntity entity = response.getEntity();
-        String result = EntityUtils.toString(entity);
-
-        if(response.getStatusLine().getStatusCode() != 200){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(result);
+    public Optional<BookEvent> getBookById(Integer id){
+        Optional<BookEvent> book = bookEventsRepository.findById(id);
+        if(book.isPresent()){
+            book.get().getBook().setAvailable(Boolean.FALSE);
+            return Optional.of(bookEventsRepository.save(book.get()));
         }else{
-
-            return ResponseEntity.status(HttpStatus.OK).body(result);
+            return Optional.empty();
         }
     }
 }

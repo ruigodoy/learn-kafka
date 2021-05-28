@@ -4,6 +4,7 @@ package com.learnkafka.entity;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConvertedEnum;
 import lombok.*;
 
 
@@ -13,19 +14,17 @@ import lombok.*;
 @Builder
 @ToString
 @EqualsAndHashCode
-@DynamoDBTable(tableName = "library_event")
-public class LibraryEvent {
+@DynamoDBTable(tableName = "book_event")
+public class BookEvent {
 
     @DynamoDBHashKey
-    private Integer libraryEventId;
+    private Integer bookEventId;
 
     @DynamoDBAttribute
-    private String initialDate;
+    @DynamoDBTypeConvertedEnum
+    private BookEventType bookEventType;
 
     @DynamoDBAttribute
-    private String finalDate;
-
-    @DynamoDBAttribute
-    private Integer bookId;
+    private Book book;
 
 }

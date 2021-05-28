@@ -1,10 +1,8 @@
 package com.learnkafka.entity;
 
 
-import com.amazonaws.services.dynamodbv2.datamodeling.*;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBDocument;
 import lombok.*;
-
-import java.io.Serializable;
 
 @AllArgsConstructor
 @NoArgsConstructor

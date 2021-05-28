@@ -2,7 +2,7 @@ spring:
   profiles:
     active: local
 server:
-  port: 8081
+  port: 8082
 
 ---
 spring:
@@ -11,12 +11,12 @@ spring:
       on-profile: local
   kafka:
     template:
-      default-topic: library-events
+      default-topic: book-events
     consumer:
       bootstrap-servers: localhost:9092
       key-deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      group-id: library-events-listener-group
+      group-id: book-events-listener-group
     producer:
       bootstrap-servers:
         -   localhost:9092

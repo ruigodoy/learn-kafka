@@ -1,6 +1,6 @@
 package com.learnkafka.domain;
 
-public enum LibraryEventType {
+public enum BookEventType {
     NEW,
     UPDATE
 }
